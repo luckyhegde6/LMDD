@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nifty 50 Market Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://s3.tradingview.com/tv.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center p-6">
+    <h1 class="text-3xl font-bold text-blue-600 mb-6">Nifty 50 Live Market Dashboard</h1>
+
+    <!-- Stock Selector -->
+    <div class="w-full max-w-lg">
+        <label class="block text-lg font-medium text-gray-700">Select Stock:</label>
+        <select id="stockSelector" class="w-full p-2 border rounded-lg bg-white shadow">
+            {% for stock in stocks %}
+                <option value="{{ stock }}">{{ stock }}</option>
+            {% endfor %}
+        </select>
+        <button class="w-full mt-3 bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600" onclick="loadAllData()">Load Stock Data</button>
+    </div>
+
+    <!-- TradingView Chart -->
+    <div class="mt-6 w-full max-w-4xl bg-white p-4 rounded-lg shadow-lg">
+        <div id="tradingview_chart" class="h-96"></div>
+    </div>
+
+    <!-- Price Alert Section -->
+    <div class="mt-6 w-full max-w-lg bg-white p-4 rounded-lg shadow-lg">
+        <h2 class="text-lg font-semibold text-gray-700">Set Price Alert</h2>
+        <input type="number" id="buyPrice" placeholder="Enter BUY price" class="w-full p-2 border rounded-lg mt-2">
+        <input type="number" id="sellPrice" placeholder="Enter SELL price" class="w-full p-2 border rounded-lg mt-2">
+        <button class="w-full mt-3 bg-green-500 text-white py-2 rounded-lg hover:bg-green-600" onclick="setAlert()">Set Alert</button>
+    </div>
+
+    <!-- Corporate Actions -->
+    <div class="mt-6 w-full max-w-4xl bg-white p-4 rounded-lg shadow-lg">
+        <h2 class="text-lg font-semibold text-gray-700">Corporate Actions</h2>
+        <div class="tradingview-widget-container">
+            <div class="tradingview-widget-container__widget" id="corporate_actions"></div>
+        </div>
+    </div>
+
+    <!-- Latest Market News -->
+    <div class="mt-6 w-full max-w-4xl bg-white p-4 rounded-lg shadow-lg">
+        <h2 class="text-lg font-semibold text-gray-700">Latest Market News</h2>
+        <div class="tradingview-widget-container">
+            <div class="tradingview-widget-container__widget" id="market_news"></div>
+        </div>
+    </div>
+
+    <script>
+        function loadTradingView() {
+            let stock = document.getElementById("stockSelector").value.replace(".NS", "");
+
+            new TradingView.widget({
+                "width": "100%",
+                "height": 500,
+                "symbol": "NSE:" + stock,
+                "interval": "D",
+                "timezone": "Asia/Kolkata",
+                "theme": "light",
+                "style": "1",
+                "locale": "en",
+                "toolbar_bg": "#f1f3f6",
+                "enable_publishing": false,
+                "hide_side_toolbar": false,
+                "withdateranges": true,
+                "allow_symbol_change": true,
+                "studies": [
+                    "MACD@tv-basicstudies",
+                    "RSI@tv-basicstudies",
+                    "BB@tv-basicstudies"
+                ],
+                "container_id": "tradingview_chart"
+            });
+        }
+
+        function setAlert() {
+            let buyPrice = document.getElementById("buyPrice").value;
+            let sellPrice = document.getElementById("sellPrice").value;
+            alert("Alerts set! BUY at " + buyPrice + " and SELL at " + sellPrice);
+        }
+
+        function loadCorporateActions() {
+            let stock = document.getElementById("stockSelector").value.replace(".NS", "");
+
+            document.getElementById("corporate_actions").innerHTML = "";
+            new TradingView.MediumWidget({
+                "symbols": [["NSE:" + stock, stock]],
+                "chartOnly": false,
+                "height": 250,
+                "colorTheme": "light",
+                "showVolume": false,
+                "hideDateRanges": false,
+                "hideMarketStatus": false,
+                "hideSymbolLogo": false,
+                "container_id": "corporate_actions"
+            });
+        }
+
+        function loadMarketNews() {
+            let stock = document.getElementById("stockSelector").value.replace(".NS", "");
+
+            document.getElementById("market_news").innerHTML = "";
+            new TradingView.MediumWidget({
+                "symbols": [["NSE:" + stock, stock]],
+                "chartOnly": false,
+                "height": 250,
+                "colorTheme": "light",
+                "showVolume": false,
+                "hideDateRanges": false,
+                "hideMarketStatus": false,
+                "hideSymbolLogo": false,
+                "container_id": "market_news"
+            });
+        }
+
+        function loadAllData() {
+            loadTradingView();
+            loadCorporateActions();
+            loadMarketNews();
+        }
+    </script>
+</body>
+</html>

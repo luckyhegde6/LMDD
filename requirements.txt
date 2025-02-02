@@ -1,0 +1,8 @@
+flask
+yfinance
+ccxt
+requests
+matplotlib
+flask-caching
+flask-sqlalchemy
+gunicorn
